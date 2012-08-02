@@ -10,6 +10,7 @@
 #include "BezierCurve.h"
 #include "Serializer.h"
 #include "Camera.h"
+#include "LuaTable.h"
 #include <list>
 
 class SpaceStation;
@@ -114,6 +115,8 @@ public:
 	void SetFlightState(FlightState s);
 	float GetWheelState() const { return m_wheelState; }
 	bool Jettison(Equip::Type t);
+
+	PersistentTable GetEquipSet() const { return m_equipSet; }
 
 	int GetModifier(const std::string & key) const {
 		std::map<std::string, int>::const_iterator it = m_modifiers.find(key);
@@ -281,6 +284,7 @@ private:
 
 	shipstats_t m_stats;
 	std::map<std::string, int> m_modifiers;
+	PersistentTable m_equipSet;
 
 	FlightState m_flightState;
 	bool m_testLanded;
