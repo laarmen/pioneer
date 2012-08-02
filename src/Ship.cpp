@@ -216,6 +216,25 @@ void Ship::SetController(ShipController *c)
 	m_controller->m_ship = this;
 }
 
+int Ship::AddModifier(const std::string & key, int value) {
+	std::map<std::string, int>::iterator it = m_modifiers.find(key);
+	if (it == m_modifiers.end())
+		it = m_modifiers.insert(std::make_pair(key, value)).first;
+	else
+		it->second += value;
+	int diff = 0;
+	if (it->first == "mass") {
+		if (value > m_stats.free_capacity) {
+			diff = value - m_stats.free_capacity;
+			it->second -= diff;
+		} else if (it->second < 0) { // The capacity cannot fall in the negatives !!
+			diff = it->second;
+			it->second = 0;
+		}
+	}
+	UpdateStats();
+	return diff;
+}
 
 float Ship::GetPercentHull() const
 {
@@ -401,7 +420,7 @@ void Ship::UpdateEquipStats()
 	const ShipType &stype = GetShipType();
 
 	m_stats.max_capacity = stype.capacity;
-	m_stats.used_capacity = 0;
+	m_stats.used_capacity = GetModifier("mass");
 	m_stats.used_cargo = 0;
 
 	for (int i=0; i<Equip::SLOT_MAX; i++) {

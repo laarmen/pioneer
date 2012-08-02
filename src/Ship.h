@@ -115,6 +115,15 @@ public:
 	float GetWheelState() const { return m_wheelState; }
 	bool Jettison(Equip::Type t);
 
+	int GetModifier(const std::string & key) const {
+		std::map<std::string, int>::const_iterator it = m_modifiers.find(key);
+		if (it == m_modifiers.end())
+			return 0;
+		return it->second;
+	}
+
+	int AddModifier(const std::string & key, int value);
+
 	virtual bool IsInSpace() const { return (m_flightState != HYPERSPACE); }
 
 	void SetHyperspaceDest(const SystemPath &dest) { m_hyperspace.dest = dest; }
@@ -271,6 +280,7 @@ private:
 	void EnterHyperspace();
 
 	shipstats_t m_stats;
+	std::map<std::string, int> m_modifiers;
 
 	FlightState m_flightState;
 	bool m_testLanded;
