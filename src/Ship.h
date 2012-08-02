@@ -127,6 +127,18 @@ public:
 
 	int AddModifier(const std::string & key, int value);
 
+	/* Returns an INVALID LuaTable when there is no data. */
+	PersistentTable GetEquipData(const std::string & key) const {
+		std::map<std::string, PersistentTable>::const_iterator it = m_equipData.find(key);
+		if (it == m_equipData.end())
+			return PersistentTable();
+		return it->second;
+	}
+	void SetEquipData(const std::string & key, PersistentTable data) {
+		assert(data.GetLua() == m_equipSet.GetLua());
+		m_equipData[key] = data;
+	}
+
 	virtual bool IsInSpace() const { return (m_flightState != HYPERSPACE); }
 
 	void SetHyperspaceDest(const SystemPath &dest) { m_hyperspace.dest = dest; }
@@ -284,6 +296,7 @@ private:
 
 	shipstats_t m_stats;
 	std::map<std::string, int> m_modifiers;
+	std::map<std::string, PersistentTable> m_equipData;
 	PersistentTable m_equipSet;
 
 	FlightState m_flightState;
