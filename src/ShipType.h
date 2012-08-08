@@ -4,7 +4,7 @@
 #include "libs.h"
 #include "vector3.h"
 #include "EquipType.h"
-#include "lua/lua.hpp"
+#include "LuaTable.h"
 #include <vector>
 #include <map>
 
@@ -43,6 +43,7 @@ struct ShipType {
 		vector3f dir;
 	} gunMount[GUNMOUNT_MAX];
 	int equipSlotCapacity[Equip::SLOT_MAX];
+	PersistentTable luaSlots;
 	int capacity; // tonnes
 	int hullMass;
 	float thrusterFuelUse; //%p per second at full thrust
