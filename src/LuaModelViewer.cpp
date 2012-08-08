@@ -731,7 +731,7 @@ int main(int argc, char **argv)
 	lua_State * l = luaL_newstate();
 	PersistentTable::Init(l);
 
-	ShipType::Init();
+	ShipType::Init(l);
 
 	g_viewer = new Viewer();
 	if (argc >= 4) {

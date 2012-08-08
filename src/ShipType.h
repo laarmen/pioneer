@@ -4,6 +4,7 @@
 #include "libs.h"
 #include "vector3.h"
 #include "EquipType.h"
+#include "lua/lua.hpp"
 #include <vector>
 #include <map>
 
@@ -69,7 +70,7 @@ struct ShipType {
 	static std::vector<Type> playable_atmospheric_ships;
 
 	static const char *gunmountNames[GUNMOUNT_MAX];
-	static void Init();
+	static void Init(lua_State * l);
 	static const ShipType *Get(const char *name) {
 		std::map<Type, ShipType>::iterator t = types.find(name);
 		if (t == types.end()) return 0;

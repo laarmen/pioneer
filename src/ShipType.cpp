@@ -200,13 +200,11 @@ int define_missile(lua_State *L)
 	return _define_ship(L, ShipType::TAG_MISSILE, &ShipType::missile_ships);
 }
 
-void ShipType::Init()
+void ShipType::Init(lua_State *l)
 {
 	static bool isInitted = false;
 	if (isInitted) return;
 	isInitted = true;
-
-	lua_State *l = luaL_newstate();
 
 	LUA_DEBUG_START(l);
 
@@ -237,11 +235,10 @@ void ShipType::Init()
 	// load all ship definitions
 	lua_pushstring(l, PIONEER_DATA_DIR);
 	lua_setglobal(l, "CurrentDirectory");
+	pi_lua_dofile(l, "libs/EquipSet.lua");
 	pi_lua_dofile_recursive(l, "ships");
 
 	LUA_DEBUG_END(l, 0);
-
-	lua_close(l);
 
 	if (ShipType::player_ships.empty())
 		Error("No playable ships have been defined! The game cannot run.");
