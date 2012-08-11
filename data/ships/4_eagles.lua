@@ -14,6 +14,12 @@ define_ship {
 		{ v(0,-.7,-40), v(0,0,-1) },
 		{ v(0,-.7,25), v(0,0,1) },
 	},
+	slots = {
+		cargo = 20,
+		missile = 2,
+		fuelscoop = 0,
+		cargoscoop = 0,
+	},
 	max_cargo = 20,
 	max_missile = 2,
 	max_fuelscoop = 0,
@@ -41,6 +47,12 @@ define_ship {
 	{
 		{ v(0,-.7,-40), v(0,0,-1) },
 		{ v(0,-.7,25), v(0,0,1) },
+	},
+	slots = {
+		cargo = 22,
+		missile = 2,
+		fuelscoop = 0,
+		cargoscoop = 0,
 	},
 	max_cargo = 22,
 	max_missile = 2,
@@ -70,6 +82,12 @@ define_ship {
 		{ v(0,-.7,-40), v(0,0,-1) },
 		{ v(0,-.7,25), v(0,0,1) },
 	},
+	slots = {
+		cargo = 22,
+		missile = 2,
+		fuelscoop = 0,
+		cargoscoop = 0,
+	},
 	max_cargo = 22,
 	max_missile = 2,
 	max_fuelscoop = 0,
@@ -97,6 +115,13 @@ define_ship {
 	{
 		{ v(0,-.7,-40), v(0,0,-1) },
 		{ v(0,-.7,25), v(0,0,1) },
+	},
+	slots = {
+		cargo = 36,
+		laser_rear = 1,
+		missile = 6,
+		fuelscoop = 1,
+		cargoscoop = 1,
 	},
 	max_cargo = 36,
 	max_laser = 2,
