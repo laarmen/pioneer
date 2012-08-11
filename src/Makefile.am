@@ -311,6 +311,7 @@ modelviewer_SOURCES = \
 	LuaFixed.cpp \
 	LmrModel.cpp \
 	LuaModelViewer.cpp \
+	LuaTable.cpp \
 	LuaUtils.cpp \
 	LuaConstants.cpp \
 	ModManager.cpp \
