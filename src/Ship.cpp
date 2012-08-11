@@ -1,4 +1,5 @@
 #include "Ship.h"
+#include "LuaShip.h"
 #include "CityOnPlanet.h"
 #include "Planet.h"
 #include "Lang.h"
@@ -184,6 +185,17 @@ Ship::Ship(ShipType::Type shipType): DynamicBody(),
 	m_shipFlavour = ShipFlavour(shipType);
 	m_thrusters.x = m_thrusters.y = m_thrusters.z = 0;
 	m_angThrusters.x = m_angThrusters.y = m_angThrusters.z = 0;
+
+	lua_State * l = Pi::luaManager->GetLuaState();
+	lua_getglobal(l, "EquipSet");
+	lua_pushstring(l, "new");
+	lua_gettable(l, -2);
+	GetShipType().luaSlots.PushCopyToStack();
+	LuaShip::PushToLua(this);
+	lua_call(l, 2, 1);
+	m_equipSet = PersistentTable(l, -1);
+	lua_pop(l, 2);
+
 	m_equipment.InitSlotSizes(shipType);
 	m_hyperspace.countdown = 0;
 	m_hyperspace.now = false;
