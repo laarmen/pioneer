@@ -815,6 +815,61 @@ static int l_ship_jettison(lua_State *l)
 }
 
 /*
+ * Method: GetEquipData
+ *
+ *	Get a specific piece of equipment data.
+ *
+ * Parameters:
+ *
+ *	key: The data identifying key (string)
+ *
+ * Return:
+ *
+ *  value: The requested data stored in a table.
+ *
+ * Availability:
+ *
+ *	TBA
+ *
+ * Status:
+ *
+ *	experimental
+ */
+static int l_ship_get_equip_data(lua_State *l) {
+	Ship *s = LuaShip::GetFromLua(1);
+	PersistentTable data = s->GetEquipData(std::string(lua_tostring(l, 2)));
+	if (data.GetLua())
+		data.PushCopyToStack();
+	else
+		lua_createtable(l, 0, 0);
+	return 1;
+}
+
+/*
+ * Method: SetEquipData
+ *
+ *   Add the value to the ship's equipment data.
+ *
+ * Parameters:
+ *
+ *   key: The data identifying key (string)
+ *
+ *   value: A table holding the data to add.
+ *
+ * Availability:
+ *
+ *   TBA
+ *
+ * Status:
+ *
+ *   experimental
+ */
+static int l_ship_set_equip_data(lua_State *l) {
+	Ship *s = LuaShip::GetFromLua(1);
+	s->SetEquipData(std::string(lua_tostring(l, 2)), PersistentTable(l, 3));
+	return 0;
+}
+/*
  * Method: GetModifier
  *
  *	Get a specific modifier value.
@@ -1509,6 +1564,8 @@ template <> void LuaObject<Ship>::RegisterClass()
 
 		{ "GetModifier",    l_ship_get_modifier },
 		{ "AddModifier",    l_ship_add_modifier },
+		{ "GetEquipData",   l_ship_get_equip_data },
+		{ "SetEquipData",   l_ship_set_equip_data },
 
 		{ "Jettison", l_ship_jettison },
 
