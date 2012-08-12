@@ -815,6 +815,63 @@ static int l_ship_jettison(lua_State *l)
 }
 
 /*
+ * Method: GetModifier
+ *
+ *	Get a specific modifier value.
+ *
+ * Parameters:
+ *
+ *	key: The modifier identifying key (string)
+ *
+ * Return:
+ *
+ *  value: The requested value (integer)
+ *
+ * Availability:
+ *
+ *	TBA
+ *
+ * Status:
+ *
+ *	experimental
+ */
+static int l_ship_get_modifier(lua_State *l) {
+	Ship *s = LuaShip::GetFromLua(1);
+	lua_pushinteger(l, s->GetModifier(std::string(lua_tostring(l, 2))));
+	return 1;
+}
+
+/*
+ * Method: AddModifier
+ *
+ *   Add the value to the ship's modifiers.
+ *
+ * Parameters:
+ *
+ *   key: The modifier identifying key (string)
+ *
+ *   value: An integer to add to the current modifier value.
+ *
+ * Return:
+ *
+ *   reject - In case the value overflows the ships capabilities, this value
+ *            says by how much. It is 0 in a normal case.
+ *
+ * Availability:
+ *
+ *  TBA
+ *
+ * Status:
+ *
+ *   experimental
+ */
+static int l_ship_add_modifier(lua_State *l) {
+	Ship *s = LuaShip::GetFromLua(1);
+	lua_pushinteger(l, s->AddModifier(std::string(lua_tostring(l, 2)), lua_tointeger(l, 3)));
+	return 1;
+}
+
+/*
  * Method: GetDockedWith
  *
  * Get the station that the ship is currently docked with
@@ -1449,6 +1506,9 @@ template <> void LuaObject<Ship>::RegisterClass()
 		{ "RemoveEquip",      l_ship_remove_equip        },
 		{ "GetEquipCount",    l_ship_get_equip_count     },
 		{ "GetEquipFree",     l_ship_get_equip_free      },
+
+		{ "GetModifier",    l_ship_get_modifier },
+		{ "AddModifier",    l_ship_add_modifier },
 
 		{ "Jettison", l_ship_jettison },
 
