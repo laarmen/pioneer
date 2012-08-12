@@ -194,7 +194,7 @@ function EquipSet:Add(equipment, num, slot)
 	local num = num or 1
 	if not slot then
 		local slot = equipment:GetDefaultSlot(self.ship)
-	elseif not equipment:IsValidSlot(slot) then
+	elseif not equipment:IsValidSlot(slot, ship) then
 		return -1
 	end
 
