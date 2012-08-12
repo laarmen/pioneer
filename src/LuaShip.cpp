@@ -1108,6 +1108,28 @@ static int l_ship_attr_alert_status(lua_State *l)
 }
 
 /*
+ * Attribute: equipSet
+ *
+ * The ship's equipment set. Please refer to the EquipSet
+ * documentation.
+ *
+ * Availability:
+ *
+ *  TBA
+ *
+ * Status:
+ *
+ *   experimental
+ */
+static int l_ship_attr_equip_set(lua_State *l)
+{
+	PersistentTable set = LuaShip::GetFromLua(-1)->GetEquipSet();
+	assert(set.GetLua() == l); // Check that we push on the right stack;
+	set.PushCopyToStack();
+	return 1;
+}
+
+/*
  * Attribute: flightState
  *
  * The current flight state of the ship. A <Constants.ShipFlightState> string.
@@ -1457,6 +1479,7 @@ template <> void LuaObject<Ship>::RegisterClass()
 		{ "flightState", l_ship_attr_flight_state },
 		{ "shipType",    l_ship_attr_ship_type },
 		{ "fuel",        l_ship_attr_fuel },
+		{ "equipSet",	 l_ship_attr_equip_set },
 		{ 0, 0 }
 	};
 
