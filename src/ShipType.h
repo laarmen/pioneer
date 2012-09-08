@@ -43,7 +43,7 @@ struct ShipType {
 		vector3f dir;
 	} gunMount[GUNMOUNT_MAX];
 	int equipSlotCapacity[Equip::SLOT_MAX];
-	PersistentTable luaSlots;
+	LuaRef luaSlots;
 	int capacity; // tonnes
 	int hullMass;
 	float thrusterFuelUse; //%p per second at full thrust

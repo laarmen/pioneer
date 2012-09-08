@@ -118,7 +118,7 @@ public:
 	bool Jettison(Equip::Type t);
 	bool SpawnCargo(CargoBody * c_body) const;
 
-	PersistentTable GetEquipSet() const { return m_equipSet; }
+	LuaRef GetEquipSet() const { return m_equipSet; }
 
 	int GetModifier(const std::string & key) const {
 		std::map<std::string, int>::const_iterator it = m_modifiers.find(key);
@@ -130,13 +130,13 @@ public:
 	int AddModifier(const std::string & key, int value);
 
 	/* Returns an INVALID LuaTable when there is no data. */
-	PersistentTable GetEquipData(const std::string & key) const {
-		std::map<std::string, PersistentTable>::const_iterator it = m_equipData.find(key);
+	LuaRef GetEquipData(const std::string & key) const {
+		std::map<std::string, LuaRef>::const_iterator it = m_equipData.find(key);
 		if (it == m_equipData.end())
-			return PersistentTable();
+			return LuaRef();
 		return it->second;
 	}
-	void SetEquipData(const std::string & key, PersistentTable data) {
+	void SetEquipData(const std::string & key, LuaRef data) {
 		assert(data.GetLua() == m_equipSet.GetLua());
 		m_equipData[key] = data;
 	}
@@ -298,8 +298,8 @@ private:
 
 	shipstats_t m_stats;
 	std::map<std::string, int> m_modifiers;
-	std::map<std::string, PersistentTable> m_equipData;
-	PersistentTable m_equipSet;
+	std::map<std::string, LuaRef> m_equipData;
+	LuaRef m_equipSet;
 
 	FlightState m_flightState;
 	bool m_testLanded;

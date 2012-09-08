@@ -4,6 +4,7 @@
 #include "Planet.h"
 #include "Lang.h"
 #include "LuaConstants.h"
+#include "LuaEvent.h"
 #include "Missile.h"
 #include "Projectile.h"
 #include "ShipAICmd.h"
@@ -18,7 +19,6 @@
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
 #include "graphics/Renderer.h"
-#include "graphics/Shader.h"
 #include "graphics/TextureBuilder.h"
 
 #define TONS_HULL_PER_SHIELD 10.0f
@@ -186,14 +186,14 @@ Ship::Ship(ShipType::Type shipType): DynamicBody(),
 	m_thrusters.x = m_thrusters.y = m_thrusters.z = 0;
 	m_angThrusters.x = m_angThrusters.y = m_angThrusters.z = 0;
 
-	lua_State * l = Pi::luaManager->GetLuaState();
+	lua_State * l = Lua::manager->GetLuaState();
 	lua_getglobal(l, "EquipSet");
 	lua_pushstring(l, "new");
 	lua_gettable(l, -2);
 	GetShipType().luaSlots.PushCopyToStack();
 	LuaShip::PushToLua(this);
 	lua_call(l, 2, 1);
-	m_equipSet = PersistentTable(l, -1);
+	m_equipSet = LuaRef(l, -1);
 	lua_pop(l, 2);
 
 	m_equipment.InitSlotSizes(shipType);
@@ -291,7 +291,7 @@ bool Ship::OnDamage(Object *attacker, float kgDamage)
 				if (attacker->IsType(Object::BODY)) {
 					// XXX remove this call. kill stuff (including elite rating) should be in a script
 					static_cast<Body*>(attacker)->OnHaveKilled(this);
-					Pi::luaOnShipDestroyed->Queue(this, dynamic_cast<Body*>(attacker));
+					LuaEvent::Queue("onShipDestroyed", this, dynamic_cast<Body*>(attacker));
 				}
 
 				if (attacker->IsType(Object::SHIP))
@@ -359,7 +359,7 @@ bool Ship::OnCollision(Object *b, Uint32 flags, double relVel)
 		b->IsType(Object::STAR) ||
 		b->IsType(Object::CARGOBODY))
 	{
-		Pi::luaOnShipCollided->Queue(this,
+		LuaEvent::Queue("onShipCollided", this,
 			b->IsType(Object::CITYONPLANET) ? dynamic_cast<CityOnPlanet*>(b)->GetPlanet() : dynamic_cast<Body*>(b));
 	}
 
@@ -702,7 +702,7 @@ void Ship::Blastoff()
 	SetPosition(up*planetRadius - aabb.min.y*up);
 	SetThrusterState(1, 1.0);		// thrust upwards
 
-	Pi::luaOnShipTakeOff->Queue(this, GetFrame()->m_astroBody);
+	LuaEvent::Queue("onShipTakeOff", this, GetFrame()->m_astroBody);
 }
 
 void Ship::TestLanded()
@@ -750,7 +750,7 @@ void Ship::TestLanded()
 				ClearThrusterState();
 				SetFlightState(LANDED);
 				Sound::BodyMakeNoise(this, "Rough_Landing", 1.0f);
-				Pi::luaOnShipLanded->Queue(this, GetFrame()->GetBodyFor());
+				LuaEvent::Queue("onShipLanded", this, GetFrame()->GetBodyFor());
 			}
 		}
 	}
@@ -896,7 +896,7 @@ void Ship::UpdateAlertState()
 		// clear existing alert state if there was one
 		if (GetAlertState() != ALERT_NONE) {
 			SetAlertState(ALERT_NONE);
-			Pi::luaOnShipAlertChanged->Queue(this, LuaConstants::GetConstantString(Pi::luaManager->GetLuaState(), "ShipAlertStatus", ALERT_NONE));
+			LuaEvent::Queue("onShipAlertChanged", this, LuaConstants::GetConstantString(Lua::manager->GetLuaState(), "ShipAlertStatus", ALERT_NONE));
 		}
 		return;
 	}
@@ -967,7 +967,7 @@ void Ship::UpdateAlertState()
 	}
 
 	if (changed)
-		Pi::luaOnShipAlertChanged->Queue(this, LuaConstants::GetConstantString(Pi::luaManager->GetLuaState(), "ShipAlertStatus", GetAlertState()));
+		LuaEvent::Queue("onShipAlertChanged", this, LuaConstants::GetConstantString(Lua::manager->GetLuaState(), "ShipAlertStatus", GetAlertState()));
 }
 
 void Ship::UpdateFuel(const float timeStep)
@@ -991,7 +991,7 @@ void Ship::UpdateFuel(const float timeStep)
 	UpdateFuelStats();
 
 	if (currentState != lastState)
-		Pi::luaOnShipFuelChanged->Queue(this, LuaConstants::GetConstantString(Pi::luaManager->GetLuaState(), "ShipFuelStatus", currentState));
+		LuaEvent::Queue("onShipFuelChanged", this, LuaConstants::GetConstantString(Lua::manager->GetLuaState(), "ShipFuelStatus", currentState));
 }
 
 void Ship::StaticUpdate(const float timeStep)
@@ -1225,7 +1225,7 @@ void Ship::Render(Graphics::Renderer *renderer, const Camera *camera, const vect
 	}
 
 	if (m_ecmRecharge > 0.0f) {
-		// pish effect
+		// ECM effect: a cloud of particles for a sparkly effect
 		vector3f v[100];
 		for (int i=0; i<100; i++) {
 			const double r1 = Pi::rng.Double()-0.5;
@@ -1243,12 +1243,8 @@ void Ship::Render(Graphics::Renderer *renderer, const Camera *camera, const vect
 			c.a = m_ecmRecharge / totalRechargeTime;
 		}
 
-		// XXX no need to recreate material every time
-		Graphics::Material mat;
-		mat.texture0 = Graphics::TextureBuilder::Model("textures/ecm.png").GetOrCreateTexture(Pi::renderer, "model");
-		mat.unlit = true;
-		mat.diffuse = c;
-		renderer->DrawPointSprites(100, v, &mat, 50.f);
+		Sfx::ecmParticle->diffuse = c;
+		renderer->DrawPointSprites(100, v, Sfx::ecmParticle, 50.f);
 	}
 }
 
@@ -1280,16 +1276,16 @@ bool Ship::Jettison(Equip::Type t)
 			CargoBody *cargo = new CargoBody(t);
 			SpawnCargo(cargo);
 
-			Pi::luaOnJettison->Queue(this, cargo);
+			LuaEvent::Queue("onJettison", this, cargo);
 		} else if (m_flightState == DOCKED) {
 			// XXX should move the cargo to the station's temporary storage
 			// (can't be recovered at this moment)
-			Pi::luaOnCargoUnload->Queue(GetDockedWith(),
-				LuaConstants::GetConstantString(Pi::luaManager->GetLuaState(), "EquipType", t));
+			LuaEvent::Queue("onCargoUnload", GetDockedWith(),
+				LuaConstants::GetConstantString(Lua::manager->GetLuaState(), "EquipType", t));
 		} else { // LANDED
 			// the cargo is lost
-			Pi::luaOnCargoUnload->Queue(GetFrame()->GetBodyFor(),
-				LuaConstants::GetConstantString(Pi::luaManager->GetLuaState(), "EquipType", t));
+			LuaEvent::Queue("onCargoUnload", GetFrame()->GetBodyFor(),
+				LuaConstants::GetConstantString(Lua::manager->GetLuaState(), "EquipType", t));
 		}
 		return true;
 	} else {
@@ -1299,14 +1295,14 @@ bool Ship::Jettison(Equip::Type t)
 
 void Ship::OnEquipmentChange(Equip::Type e)
 {
-	Pi::luaOnShipEquipmentChanged->Queue(this, LuaConstants::GetConstantString(Pi::luaManager->GetLuaState(), "EquipType", e));
+	LuaEvent::Queue("onShipEquipmentChanged", this, LuaConstants::GetConstantString(Lua::manager->GetLuaState(), "EquipType", e));
 }
 
 void Ship::UpdateFlavour(const ShipFlavour *f)
 {
 	assert(f->type == m_shipFlavour.type);
 	m_shipFlavour = *f;
-	Pi::luaOnShipFlavourChanged->Queue(this);
+	LuaEvent::Queue("onShipFlavourChanged", this);
 }
 
 /*
@@ -1318,7 +1314,7 @@ void Ship::ResetFlavour(const ShipFlavour *f)
 	m_equipment.InitSlotSizes(f->type);
 	SetLabel(f->regid);
 	Init();
-	Pi::luaOnShipFlavourChanged->Queue(this);
+	LuaEvent::Queue("onShipFlavourChanged", this);
 }
 
 void Ship::EnterHyperspace() {
@@ -1342,7 +1338,7 @@ void Ship::EnterHyperspace() {
 	}
 	UpdateEquipStats();
 
-	Pi::luaOnLeaveSystem->Queue(this);
+	LuaEvent::Queue("onLeaveSystem", this);
 
 	SetFlightState(Ship::HYPERSPACE);
 
@@ -1370,7 +1366,7 @@ void Ship::EnterSystem() {
 
 	SetFlightState(Ship::FLYING);
 
-	Pi::luaOnEnterSystem->Queue(this);
+	LuaEvent::Queue("onEnterSystem", this);
 }
 
 void Ship::OnEnterSystem() {

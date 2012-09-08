@@ -106,7 +106,6 @@ static int l_ship_get_stats(lua_State *l)
 	const shipstats_t &stats = s->GetStats();
 
 	lua_newtable(l);
-    pi_lua_table_ro(l);
 	pi_lua_settable(l, "maxCapacity",        stats.max_capacity);
 	pi_lua_settable(l, "usedCapacity",       stats.used_capacity);
 	pi_lua_settable(l, "usedCargo",          stats.used_cargo);
@@ -139,7 +138,7 @@ static int l_ship_get_stats(lua_State *l)
  *
  * Example:
  *
- * > ship:SetShipType('Sirius Interdictor')
+ * > ship:SetShipType('sirius_interdictor')
  *
  * Availability:
  *
@@ -557,7 +556,6 @@ static int l_ship_get_equip(lua_State *l)
 	} else {
 		// 1-argument version; returns table of equipment items
 		lua_newtable(l);
-		pi_lua_table_ro(l);
 
 		for (int idx = 0; idx < size; idx++) {
 			lua_pushinteger(l, idx+1);
@@ -784,7 +782,7 @@ static int l_ship_get_equip_free(lua_State *l)
  *
  * > success = ship:Jettison(item)
  *
- * On sucessful jettison, the <EventQueue.onJettison> event is triggered.
+ * On sucessful jettison, the <Event.onJettison> event is triggered.
  *
  * Parameters:
  *
@@ -837,7 +835,7 @@ static int l_ship_jettison(lua_State *l)
  */
 static int l_ship_get_equip_data(lua_State *l) {
 	Ship *s = LuaShip::GetFromLua(1);
-	PersistentTable data = s->GetEquipData(std::string(lua_tostring(l, 2)));
+	LuaRef data = s->GetEquipData(std::string(lua_tostring(l, 2)));
 	if (data.GetLua())
 		data.PushCopyToStack();
 	else
@@ -866,7 +864,7 @@ static int l_ship_get_equip_data(lua_State *l) {
  */
 static int l_ship_set_equip_data(lua_State *l) {
 	Ship *s = LuaShip::GetFromLua(1);
-	s->SetEquipData(std::string(lua_tostring(l, 2)), PersistentTable(l, 3));
+	s->SetEquipData(std::string(lua_tostring(l, 2)), LuaRef(l, 3));
 	return 0;
 }
 /*
@@ -961,7 +959,7 @@ static int l_ship_get_docked_with(lua_State *l)
  *
  * > success = ship:Undock()
  *
- * <EventQueue.onShipUndocked> will be triggered once undocking is complete
+ * <Event.onShipUndocked> will be triggered once undocking is complete
  *
  * Return:
  *
@@ -1150,7 +1148,7 @@ static int l_ship_get_hyperspace_details(lua_State *l)
  * > status = ship:HyperspaceTo(path)
  *
  * If the status returned is "OK", then a hyperspace departure cloud will be
- * created where the ship was and the <EventQueue.onLeaveSystem> event will be
+ * created where the ship was and the <Event.onLeaveSystem> event will be
  * triggered.
  *
  * Parameters:
@@ -1235,7 +1233,7 @@ static int l_ship_attr_alert_status(lua_State *l)
  */
 static int l_ship_attr_equip_set(lua_State *l)
 {
-	PersistentTable set = LuaShip::GetFromLua(-1)->GetEquipSet();
+	LuaRef set = LuaShip::GetFromLua(-1)->GetEquipSet();
 	assert(set.GetLua() == l); // Check that we push on the right stack;
 	set.PushCopyToStack();
 	return 1;
@@ -1311,7 +1309,7 @@ static int l_ship_attr_fuel(lua_State *l)
  * high-level commands to instruct the ship to fly somewhere and possibly take
  * some action when it arrives (like dock or attack).
  *
- * When an AI completes the <EventQueue.onAICompleted> event is triggered, and
+ * When an AI completes the <Event.onAICompleted> event is triggered, and
  * the ship is left with engines off in whatever state the AI left it in. For
  * some AI methods (eg <AIEnterLowOrbit>) this is useful. For others it will
  * likely mean the ship will eventually succumb to gravity and crash
@@ -1514,7 +1512,7 @@ static int l_ship_ai_enter_high_orbit(lua_State *l)
  * This ship is left with the orientation and velocity it had when <CancelAI>
  * was called. The engines are switched off.
  *
- * Note that <EventQueue.onAICompleted> will not be triggered by calling
+ * Note that <Event.onAICompleted> will not be triggered by calling
  * <CancelAI>, as the AI did not actually complete.
  *
  * You do not need to call this if you intend to immediately invoke another AI
