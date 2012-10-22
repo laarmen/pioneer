@@ -1,3 +1,6 @@
+// Copyright © 2008-2012 Pioneer Developers. See AUTHORS.txt for details
+// Licensed under the terms of the GPL v3. See licenses/GPL-3.txt
+
 #include "LuaShip.h"
 #include "LuaSpaceStation.h"
 #include "LuaSystemPath.h"
@@ -127,8 +130,7 @@ static int l_ship_get_stats(lua_State *l)
 
 /* Method: SetShipType
  *
- * Replaces the ship with a new ship of the specified type. Can only be done
- * while docked.
+ * Replaces the ship with a new ship of the specified type.
  *
  * > ship:SetShipType(newtype)
  *
@@ -157,9 +159,6 @@ static int l_ship_set_type(lua_State *l)
 	const char *type = luaL_checkstring(l, 2);
 	if (! ShipType::Get(type))
 		luaL_error(l, "Unknown ship type '%s'", type);
-
-	if (s->GetFlightState() != Ship::DOCKED)
-		luaL_error(l, "Cannot change ship type unless docked");
 
 	ShipFlavour f(type);
 

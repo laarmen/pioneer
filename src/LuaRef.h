@@ -1,3 +1,6 @@
+// Copyright © 2008-2012 Pioneer Developers. See AUTHORS.txt for details
+// Licensed under the terms of the GPL v3. See licenses/GPL-3.txt
+
 #ifndef _LUAREF_H
 #define _LUAREF_H
 
@@ -6,7 +9,7 @@
 
 class LuaRef {
 public:
-	LuaRef(): m_lua(0), m_id(0), m_copycount(new int(0)) {}
+	LuaRef(): m_lua(0), m_id(LUA_NOREF), m_copycount(new int(0)) {}
 	LuaRef(lua_State * l, int index);
 	LuaRef(const LuaRef & ref);
 	~LuaRef();
@@ -22,7 +25,9 @@ private:
 	int m_id;
 	int * m_copycount;
 
-	void PushGlobalToStack() const;
+	// Does everything we need: get the table, or create it if it doesn't exist.
+	// Yay lua aux lib !
+	void PushGlobalToStack() const {luaL_getsubtable(m_lua, LUA_REGISTRYINDEX, "LuaRef");}
 
 	void CheckCopyCount();
 };

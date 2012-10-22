@@ -1,3 +1,6 @@
+// Copyright © 2008-2012 Pioneer Developers. See AUTHORS.txt for details
+// Licensed under the terms of the GPL v3. See licenses/GPL-3.txt
+
 #include "LuaRef.h"
 #include <cassert>
 
@@ -65,21 +68,9 @@ LuaRef::LuaRef(lua_State * l, int index): m_lua(l), m_id(0) {
 
 
 void LuaRef::PushCopyToStack() const {
-	assert(m_lua && m_id == LUA_NOREF);
+	assert(m_lua && m_id != LUA_NOREF);
 	PushGlobalToStack();
-	lua_rawgeti(m_lua, -2, m_id);
+	lua_rawgeti(m_lua, -1, m_id);
 	lua_remove(m_lua, -2);
-}
-
-void LuaRef::PushGlobalToStack() const {
-	lua_pushstring(m_lua, "LuaRef");
-	lua_gettable(m_lua, LUA_REGISTRYINDEX);
-	if (lua_isnil(m_lua, -1)) {
-		lua_pop(m_lua, 1);
-		lua_newtable(m_lua);
-		lua_pushstring(m_lua, "LuaRef");
-		lua_pushvalue(m_lua, -2);
-		lua_settable(m_lua, LUA_REGISTRYINDEX);
-	}
 }
 
