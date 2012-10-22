@@ -369,7 +369,7 @@ void Pi::Init()
 //_controlfp_s(&control_word, _EM_INEXACT | _EM_UNDERFLOW | _EM_ZERODIVIDE, _MCW_EM);
 //double fpexcept = Pi::timeAccelRates[1] / Pi::timeAccelRates[0];
 
-	ShipType::Init(Lua::manager->GetLuaState());
+	ShipType::Init();
 	draw_progress(0.6f);
 
 	GeoSphere::Init();

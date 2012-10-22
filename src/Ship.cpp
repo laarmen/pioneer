@@ -191,7 +191,7 @@ Ship::Ship(ShipType::Type shipType): DynamicBody(),
 	lua_getglobal(l, "EquipSet");
 	lua_pushstring(l, "new");
 	lua_gettable(l, -2);
-	GetShipType().luaSlots.PushCopyToStack();
+	LuaTable(l).LoadMap(GetShipType().slots);
 	LuaShip::PushToLua(this);
 	lua_call(l, 2, 1);
 	m_equipSet = LuaRef(l, -1);

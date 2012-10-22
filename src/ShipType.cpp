@@ -5,6 +5,7 @@
 #include "LmrModel.h"
 #include "LuaVector.h"
 #include "LuaUtils.h"
+#include "LuaTable.h"
 #include "LuaConstants.h"
 #include "FileSystem.h"
 #include "utils.h"
@@ -141,12 +142,9 @@ int _define_ship(lua_State *L, ShipType::Tag tag, std::vector<ShipType::Type> *l
 
 	lua_pushstring(L, "slots");
 	lua_gettable(L, -2);
-	if (lua_isnil(L, -1)) {
-		lua_pop(L, 1);
-		lua_newtable(L);
-	}
-	s.luaSlots = LuaRef(L, -1);
-	lua_pop(L, 1);
+	if (!lua_isnil(L, -1))
+        s.slots = LuaTable(L, -1).GetMap<std::string, int>();
+    lua_pop(L, 1);
 
 	_get_int_attrib(L, "capacity", s.capacity, 0);
 	_get_int_attrib(L, "hull_mass", s.hullMass, 100);
@@ -240,12 +238,13 @@ int define_missile(lua_State *L)
 	return _define_ship(L, ShipType::TAG_MISSILE, &ShipType::missile_ships);
 }
 
-void ShipType::Init(lua_State *l)
+void ShipType::Init()
 {
 	static bool isInitted = false;
 	if (isInitted) return;
 	isInitted = true;
 
+	lua_State * l = luaL_newstate();
 	LUA_DEBUG_START(l);
 
 	luaL_requiref(l, "_G", &luaopen_base, 1);

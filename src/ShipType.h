@@ -7,9 +7,9 @@
 #include "libs.h"
 #include "vector3.h"
 #include "EquipType.h"
-#include "LuaTable.h"
 #include <vector>
 #include <map>
+#include <string>
 
 struct ShipType {
 	enum Thruster { // <enum scope='ShipType' name=ShipTypeThruster prefix=THRUSTER_>
@@ -52,7 +52,7 @@ struct ShipType {
 		DualLaserOrientation orient;
 	} gunMount[GUNMOUNT_MAX];
 	int equipSlotCapacity[Equip::SLOT_MAX];
-	LuaRef luaSlots;
+    std::map<std::string, int> slots;
 	int capacity; // tonnes
 	int hullMass;
 	float thrusterFuelUse; //%p per second at full thrust
@@ -79,7 +79,7 @@ struct ShipType {
 	static std::vector<Type> playable_atmospheric_ships;
 
 	static const char *gunmountNames[GUNMOUNT_MAX];
-	static void Init(lua_State * l);
+	static void Init();
 	static const ShipType *Get(const char *name) {
 		std::map<Type, ShipType>::iterator t = types.find(name);
 		if (t == types.end()) return 0;

@@ -748,9 +748,7 @@ int main(int argc, char **argv)
 	LmrModelCompilerInit(renderer);
 	LmrNotifyScreenWidth(g_width);
 
-	lua_State * l = luaL_newstate();
-
-	ShipType::Init(l);
+	ShipType::Init();
 
 	g_viewer = new Viewer();
 	if (argc >= 4) {
