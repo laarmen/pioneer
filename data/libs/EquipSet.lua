@@ -27,9 +27,8 @@ defaultSlots = {
 	autopilot=1,
 }
 
-function EquipSet.new (slots, ship)
+function EquipSet.new (slots)
 	obj = {}
-	obj.ship = ship
 	obj.slots = {}
 	for k, n in pairs(defaultSlots) do
 		obj.slots[k] = {__occupied = 0, __limit = n}
@@ -190,10 +189,10 @@ end
 --  installed - the number of pieces actually installed, or -1 if the specified
 --              slot is not valid.
 --
-function EquipSet:Add(equipment, num, slot)
+function EquipSet:Add(equipment, num, slot, ship)
 	local num = num or 1
 	if not slot then
-		local slot = equipment:GetDefaultSlot(self.ship)
+		local slot = equipment:GetDefaultSlot(ship)
 	elseif not equipment:IsValidSlot(slot, ship) then
 		return -1
 	end
@@ -202,7 +201,7 @@ function EquipSet:Add(equipment, num, slot)
 	if added == 0 then
 		return 0
 	end
-	local postinst_diff = added - equipment:Install(num, slot, self.ship)
+	local postinst_diff = added - equipment:Install(num, slot, ship)
 	if postinst_diff <= 0 then
 		return added
 	end
@@ -226,16 +225,16 @@ end
 --
 --  removed - the number of pieces actually removed.
 --
-function EquipSet:Remove(equipment, num, slot)
+function EquipSet:Remove(equipment, num, slot, ship)
 	local num = num or 1
 	if not slot then
-		local slot = equipment:GetDefaultSlot(self.ship)
+		local slot = equipment:GetDefaultSlot(ship)
 	end
 	local removed = self:__Remove_NoCheck(equipment, num, slot)
 	if removed == 0 then
 		return 0
 	end
-	local postuninstall_diff = removed - equipment:Uninstall(num, slot, self.ship)
+	local postuninstall_diff = removed - equipment:Uninstall(num, slot, ship)
 	if postuninstall_diff <= 0 then
 		return removed
 	end

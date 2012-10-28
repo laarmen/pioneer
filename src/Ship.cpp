@@ -2,7 +2,6 @@
 // Licensed under the terms of the GPL v3. See licenses/GPL-3.txt
 
 #include "Ship.h"
-#include "LuaShip.h"
 #include "CityOnPlanet.h"
 #include "Planet.h"
 #include "Lang.h"
@@ -192,8 +191,7 @@ Ship::Ship(ShipType::Type shipType): DynamicBody(),
 	lua_pushstring(l, "new");
 	lua_gettable(l, -2);
 	LuaTable(l).LoadMap(GetShipType().slots);
-	LuaShip::PushToLua(this);
-	lua_call(l, 2, 1);
+	lua_call(l, 1, 1);
 	m_equipSet = LuaRef(l, -1);
 	lua_pop(l, 2);
 
