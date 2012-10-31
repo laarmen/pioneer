@@ -58,10 +58,10 @@ end
 --  free_space - The available space (integer)
 --
 function EquipSet:FreeSpace (slot)
-	if not self.slots[slot] then
+	local s = self.slots[slot]
+	if not s then
 		return 0
 	end
-	local s = self.slots[slot]
 	return s.__limit - s.__occupied
 end
 

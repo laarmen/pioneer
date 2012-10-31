@@ -14,7 +14,7 @@ function EquipType.new (specs)
 end
 
 function EquipType:GetDefaultSlot(ship)
-	return self.slots[0]
+	return self.slots[1]
 end
 
 function EquipType:IsValidSlot(ship, slot)
