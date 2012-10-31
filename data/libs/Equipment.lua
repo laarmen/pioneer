@@ -1,4 +1,3 @@
-
 EquipType = {}
 equipType_meta = { __index = EquipType }
 
@@ -51,10 +50,10 @@ function __ApplyModifiers(ship, modifiers, num, factor)
 	return number_applied
 end
 
-function EquipType:Install(num, slot, ship)
-	return __ApplyModifiers(self.modifiers, num, ship, 1)
+function EquipType:Install(ship, num, slot)
+	return __ApplyModifiers(ship, self.modifiers, num, 1)
 end
 
-function EquipType:Uninstall(num, slot, ship)
-	return __ApplyModifiers(self.modifiers, num, ship, -1)
+function EquipType:Uninstall(ship, num, slot)
+	return __ApplyModifiers(ship, self.modifiers, num, -1)
 end

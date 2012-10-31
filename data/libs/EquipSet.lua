@@ -193,7 +193,7 @@ function EquipSet:Add(ship, equipment, num, slot)
 	local num = num or 1
 	if not slot then
 		local slot = equipment:GetDefaultSlot(ship)
-	elseif not equipment:IsValidSlot(slot, ship) then
+	elseif not equipment:IsValidSlot(ship, slot) then
 		return -1
 	end
 
@@ -201,7 +201,7 @@ function EquipSet:Add(ship, equipment, num, slot)
 	if added == 0 then
 		return 0
 	end
-	local postinst_diff = added - equipment:Install(num, slot, ship)
+	local postinst_diff = added - equipment:Install(ship, num, slot)
 	if postinst_diff <= 0 then
 		return added
 	end
@@ -234,7 +234,7 @@ function EquipSet:Remove(ship, equipment, num, slot)
 	if removed == 0 then
 		return 0
 	end
-	local postuninstall_diff = removed - equipment:Uninstall(num, slot, ship)
+	local postuninstall_diff = removed - equipment:Uninstall(ship, num, slot)
 	if postuninstall_diff <= 0 then
 		return removed
 	end
