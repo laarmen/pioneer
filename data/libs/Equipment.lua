@@ -18,7 +18,7 @@ function EquipType:GetDefaultSlot(ship)
 	return self.slots[0]
 end
 
-function EquipType:IsValidSlot(slot, ship)
+function EquipType:IsValidSlot(ship, slot)
 	for _, s in ipairs(self.slots) do
 		if s == slot then
 			return true
@@ -27,7 +27,7 @@ function EquipType:IsValidSlot(slot, ship)
 	return false
 end
 
-function __ApplyModifiers(modifiers, num, ship, factor)
+function __ApplyModifiers(ship, modifiers, num, factor)
 	if num <= 0 then return 0 end
 	local factor = factor or 1
 	local applied_modifiers = {}

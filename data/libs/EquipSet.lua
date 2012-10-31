@@ -189,7 +189,7 @@ end
 --  installed - the number of pieces actually installed, or -1 if the specified
 --              slot is not valid.
 --
-function EquipSet:Add(equipment, num, slot, ship)
+function EquipSet:Add(ship, equipment, num, slot)
 	local num = num or 1
 	if not slot then
 		local slot = equipment:GetDefaultSlot(ship)
@@ -225,7 +225,7 @@ end
 --
 --  removed - the number of pieces actually removed.
 --
-function EquipSet:Remove(equipment, num, slot, ship)
+function EquipSet:Remove(ship, equipment, num, slot)
 	local num = num or 1
 	if not slot then
 		local slot = equipment:GetDefaultSlot(ship)
