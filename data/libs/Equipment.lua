@@ -8,8 +8,8 @@ function EquipType.new (specs)
 		obj[i] = v
 	end
 	setmetatable(obj, equipType_meta)
-	if type(self.slots) ~= "table" then
-		self.slots = {self.slots}
+	if type(obj.slots) ~= "table" then
+		obj.slots = {obj.slots}
 	end
 	return obj
 end
