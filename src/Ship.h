@@ -115,7 +115,6 @@ public:
 	FlightState GetFlightState() const { return m_flightState; }
 	void SetFlightState(FlightState s);
 	float GetWheelState() const { return m_wheelState; }
-	bool Jettison(Equip::Type t);
 	bool SpawnCargo(CargoBody * c_body) const;
 
 	LuaRef GetEquipSet() const { return m_equipSet; }
