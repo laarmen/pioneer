@@ -242,3 +242,28 @@ function EquipSet:Remove(ship, equipment, num, slot)
 	self:__Add_NoCheck(equipment, postuninstall_diff, slot)
 	return removed - postuninstall_diff
 end
+
+function EquipSet:Get(slot, index)
+	if type(index) == "number" then
+		return self.slots[slot][index]
+	end
+	ret = {}
+	for i,v in ipairs(self.slots[slot]) do
+		table.insert(ret, i, v)
+	end
+	return ret
+end
+
+function EquipSet:Set(ship, slot, index, equipment)
+	if index < 1 or index > # (self.slots[slot]) then
+		error("EquipSet:Set(): argument 'index' out of range")
+	end
+	to_remove = self.slots[slot][index]
+	if not to_remove or to_remove:Uninstall(ship, 1, slot) == 1 then
+		if equipment:Install(ship, 1, slot) == 1 then
+			self.slots[slot][index] = equipment
+		else -- Rollback the uninstall
+			to_remove:Install(ship, 1, slot)
+		end
+	end
+end
