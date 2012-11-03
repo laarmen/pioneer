@@ -5,6 +5,7 @@
 #include "Pi.h"
 #include "Frame.h"
 #include "Player.h"
+#include "LuaShip.h"
 #include "Planet.h"
 #include "galaxy/Sector.h"
 #include "SectorView.h"
@@ -650,7 +651,7 @@ void WorldView::RefreshButtonStateAndVisibility()
 
 	Body *b = Pi::player->GetCombatTarget() ? Pi::player->GetCombatTarget() : Pi::player->GetNavTarget();
 	if (b) {
-		if (b->IsType(Object::SHIP) && Pi::player->m_equipment.Get(Equip::SLOT_RADARMAPPER) == Equip::RADAR_MAPPER) {
+		if (b->IsType(Object::SHIP) && Pi::player->GetModifier("radar_mapper") > 0) {
 			assert(b->IsType(Object::SHIP));
 			Ship *s = static_cast<Ship*>(b);
 
@@ -663,7 +664,7 @@ void WorldView::RefreshButtonStateAndVisibility()
 			m_hudTargetHullIntegrity->Show();
 
 			float sShields = 0;
-			if (s->m_equipment.Count(Equip::SLOT_SHIELD, Equip::SHIELD_GENERATOR) > 0) {
+			if (s->GetModifier("shield") > 0) {
 				sShields = s->GetPercentShields();
 			}
 			m_hudTargetShieldIntegrity->SetColor(get_color_for_warning_meter_bar(sShields));
@@ -676,17 +677,29 @@ void WorldView::RefreshButtonStateAndVisibility()
 			text += flavour->regid;
 			text += "\n";
 
-			if (s->m_equipment.Get(Equip::SLOT_ENGINE) == Equip::NONE) {
+			lua_State * l = Lua::manager->GetLuaState();
+			int clean_stack = lua_gettop(l);
+			LuaShip::PushToLua(s);
+			lua_pushstring(l, "GetEquip");
+			lua_gettable(l, -2);
+			lua_pushvalue(l, -2);
+			lua_pushstring(l, "ENGINE");
+			lua_call(l, 2, 1);
+			lua_rawgeti(l, -1, 1);
+			if (lua_isnil(l, -1)) {
 				text += Lang::NO_HYPERDRIVE;
 			} else {
-				text += Equip::types[s->m_equipment.Get(Equip::SLOT_ENGINE)].name;
+				lua_pushstring(l, "name");
+				lua_gettable(l, -2);
+				text += lua_tostring(l, -1);
 			}
+			lua_settop(l, clean_stack);
 
 			text += "\n";
 			text += stringf(Lang::MASS_N_TONNES, formatarg("mass", stats.total_mass));
 			text += "\n";
 			text += stringf(Lang::SHIELD_STRENGTH_N, formatarg("shields",
-				(sShields*0.01f) * float(s->m_equipment.Count(Equip::SLOT_SHIELD, Equip::SHIELD_GENERATOR))));
+				(sShields*0.01f) * float(s->GetModifier("shield"))));
 			text += "\n";
 			text += stringf(Lang::CARGO_N, formatarg("mass", stats.used_cargo));
 			text += "\n";
