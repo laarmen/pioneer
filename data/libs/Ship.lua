@@ -51,3 +51,31 @@ function Ship:Jettison(equip)
 	end
 end
 
+--
+-- Method: GetEquipSlotCapacity
+--
+-- Get the maximum number of a particular type of equipment this ship can
+-- hold. This is the number of items that can be held, not the mass.
+-- <AddEquip> will take care of ensuring the hull capacity is not exceeded.
+--
+-- > capacity = shiptype:GetEquipSlotCapacity(slot)
+--
+-- Parameters:
+--
+--   slot - a <Constants.EquipSlot> string for the wanted equipment type
+--
+-- Returns:
+--
+--   capacity - the maximum capacity of the equipment slot
+--
+-- Availability:
+--
+--  alpha 10
+--
+-- Status:
+--
+--  experimental
+--
+function Ship:GetEquipSlotCapacity(slot)
+    return self.equipSet:SlotSize(slot)
+end

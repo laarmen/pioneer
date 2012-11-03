@@ -468,39 +468,6 @@ static int l_ship_set_secondary_colour(lua_State *l)
 }
 
 /*
- * Method: GetEquipSlotCapacity
- *
- * Get the maximum number of a particular type of equipment this ship can
- * hold. This is the number of items that can be held, not the mass.
- * <AddEquip> will take care of ensuring the hull capacity is not exceeded.
- *
- * > capacity = shiptype:GetEquipSlotCapacity(slot)
- *
- * Parameters:
- *
- *   slot - a <Constants.EquipSlot> string for the wanted equipment type
- *
- * Returns:
- *
- *   capacity - the maximum capacity of the equipment slot
- *
- * Availability:
- *
- *  alpha 10
- *
- * Status:
- *
- *  experimental
- */
-static int l_ship_get_equip_slot_capacity(lua_State *l)
-{
-	Ship *s = LuaShip::GetFromLua(1);
-	Equip::Slot slot = static_cast<Equip::Slot>(LuaConstants::GetConstant(l, "EquipSlot", luaL_checkstring(l, 2)));
-	lua_pushinteger(l, s->m_equipment.GetSlotSize(slot));
-	return 1;
-}
-
-/*
  * Method: GetEquip
  *
  * Get a list of equipment in a given equipment slot
@@ -1544,7 +1511,6 @@ template <> void LuaObject<Ship>::RegisterClass()
 		{ "SetPrimaryColour",   l_ship_set_primary_colour   },
 		{ "SetSecondaryColour", l_ship_set_secondary_colour },
 
-		{ "GetEquipSlotCapacity", l_ship_get_equip_slot_capacity },
 		{ "GetEquip",         l_ship_get_equip           },
 		{ "SetEquip",         l_ship_set_equip           },
 		{ "AddEquip",         l_ship_add_equip           },

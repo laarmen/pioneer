@@ -65,6 +65,14 @@ function EquipSet:FreeSpace (slot)
 	return s.__limit - s.__occupied
 end
 
+function EquipSet:SlotSize(slot)
+    local s = self.slots[slot]
+    if not s then
+        return 0
+    end
+    return s.__limit
+end
+
 --
 -- Method: Count
 --
