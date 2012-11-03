@@ -19,7 +19,7 @@
 --
 -- Parameters:
 --
---   item - the item to jettison
+--   equip - the item to jettison
 --
 -- Result:
 --
