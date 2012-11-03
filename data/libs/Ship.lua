@@ -1,3 +1,4 @@
+local compat = {}
 --
 -- Class: Ship
 --
@@ -77,6 +78,11 @@ end
 --  experimental
 --
 function Ship:GetEquipSlotCapacity(slot)
+	local c = compat.slots.old2new[slot]
+	if c then
+		print("WARNING: GetEquipSlotCapacity slot specification is deprecated!")
+		return self.equipSet:SlotSize(c)
+	end
     return self.equipSet:SlotSize(slot)
 end
 
@@ -106,5 +112,65 @@ end
 --  experimental
 --
 function Ship:GetEquipCount(slot, item)
+	local c = compat.slots.old2new[slot]
+	if c then
+		print("WARNING: GetEquipCount slot specification is deprecated!")
+		slot = c
+	end
+	if type(item) == "string" then
+		print("WARNING: GetEquipCount item specification is deprecated!")
+		item = compat.equip.old2new[item]
+	end
     return self.equipSet:Count(item, slot)
+end
+compat.slots = {}
+compat.equip = {}
+compat.slots.old2new={
+	CARGO="cargo", ENGINE="engine", LASER="laser_front",
+	MISSILE="missile", ECM="ecm", SCANNER="scanner", RADARMAPPER="radar_mapper",
+	HYPERCLOUD="hypercloud", HULLAUTOREPAIR="hull_autorepair",
+	ENERGYBOOSTER="energy_booster", ATMOSHIELD="atmo_shield", CABIN="cabin",
+	SHIELD="shield", FUELSCOOP="fuel_scoop", CARGOSCOOP="cargo_scoop",
+	LASERCOOLER="laser_cooler", CARGOLIFESUPPORT="cargo_life_support",
+	AUTOPILOT="autopilot"
+}
+compat.slots.new2old = {}
+for k,v in pairs(compat.slots.old2new) do
+	compat.slots.new2old[v] = k
+end
+
+compat.equip.new2old = {
+	[cargo.hydrogen]="HYDROGEN", [cargo.air_processors]="AIR_PROCESSORS", [cargo.animal_meat]="ANIMAL_MEAT",
+	[cargo.battle_weapons]="BATTLE_WEAPONS", [cargo.carbon_ore]="CARBON_ORE", [cargo.computers]="COMPUTERS",
+	[cargo.consumer_goods]="CONSUMER_GOODS", [cargo.farm_machinery]="FARM_MACHINERY", [cargo.fertilizer]="FERTILIZER",
+	[cargo.fruit_and_veg]="FRUIT_AND_VEG", [cargo.grain]="GRAIN", [cargo.hand_weapons]="HAND_WEAPONS",
+	[cargo.hydrogen]="HYDROGEN", [cargo.industrial_machinery]="INDUSTRIAL_MACHINERY", [cargo.liquid_oxygen]="LIQUID_OXYGEN",
+	[cargo.liquor]="LIQUOR", [cargo.live_animals]="LIVE_ANIMALS", [cargo.medicines]="MEDICINES", [cargo.metal_alloys]="METAL_ALLOYS",
+	[cargo.metal_ore]="METAL_ORE", [cargo.military_fuel]="MILITARY_FUEL", [cargo.mining_machinery]="MINING_MACHINERY",
+	[cargo.narcotics]="NARCOTICS", [cargo.nerve_gas]="NERVE_GAS", [cargo.plastics]="PLASTICS",
+	[cargo.precious_metals]="PRECIOUS_METALS", [cargo.radioactives]="RADIOACTIVES", [cargo.robots]="ROBOTS",
+	[cargo.rubbish]="RUBBISH", [cargo.slaves]="SLAVES", [cargo.textiles]="TEXTILES", [cargo.water]="WATER",
+
+	[equipment.missile_unguided]="MISSILE_UNGUIDED", [equipment.missile_guided]="MISSILE_GUIDED",
+	[equipment.missile_smart]="MISSILE_SMART", [equipment.missile_naval]="MISSILE_NAVAL",
+	[equipment.atmospheric_shielding]="ATMOSPHERIC_SHIELDING", [equipment.ecm_basic]="ECM_BASIC",
+	[equipment.ecm_advanced]="ECM_ADVANCED", [equipment.scanner]="SCANNER", [equipment.cabin]="CABIN",
+	[equipment.shield_generator]="SHIELD_GENERATOR", [equipment.laser_cooling_booster]="LASER_COOLING_BOOSTER",
+	[equipment.cargo_life_support]="CARGO_LIFE_SUPPORT", [equipment.autopilot]="AUTOPILOT",
+	[equipment.radar_mapper]="RADAR_MAPPER", [equipment.fuel_scoop]="FUEL_SCOOP",
+	[equipment.cargo_scoop]="CARGO_SCOOP", [equipment.hypercloud_analyzer]="HYPERCLOUD_ANALYZER",
+	[equipment.shield_energy_booster]="SHIELD_ENERGY_BOOSTER", [equipment.hull_autorepair]="HULL_AUTOREPAIR",
+	[equipment.hyperdrive_1]="DRIVE_CLASS1", [equipment.hyperdrive_2]="DRIVE_CLASS2", [equipment.hyperdrive_3]="DRIVE_CLASS3",
+	[equipment.hyperdrive_4]="DRIVE_CLASS4", [equipment.hyperdrive_5]="DRIVE_CLASS5", [equipment.hyperdrive_6]="DRIVE_CLASS6",
+	[equipment.hyperdrive_7]="DRIVE_CLASS7", [equipment.hyperdrive_8]="DRIVE_CLASS8", [equipment.hyperdrive_9]="DRIVE_CLASS9",
+	[equipment.hyperdrive_mil1]="DRIVE_MIL1", [equipment.hyperdrive_mil2]="DRIVE_MIL2", [equipment.hyperdrive_mil3]="DRIVE_MIL3",
+	[equipment.hyperdrive_mil4]="DRIVE_MIL4", [equipment.pulsecannon_1mw]="PULSECANNON_1MW", [equipment.pulsecannon_dual_1mw]="PULSECANNON_DUAL_1MW",
+	[equipment.pulsecannon_2mw]="PULSECANNON_2MW", [equipment.pulsecannon_rapid_2mw]="PULSECANNON_RAPID_2MW",
+	[equipment.pulsecannon_4mw]="PULSECANNON_4MW", [equipment.pulsecannon_10mw]="PULSECANNON_10MW",
+	[equipment.pulsecannon_20mw]="PULSECANNON_20MW", [equipment.miningcannon_17mw]="MININGCANNON_17MW",
+	[equipment.small_plasma_accelerator]="SMALL_PLASMA_ACCEL", [equipment.large_plasma_accelerator]="LARGE_PLASMA_ACCEL"
+}
+compat.equip.old2new = {}
+for k,v in pairs(compat.equip.new2old) do
+	compat.equip.old2new[v] = k
 end
