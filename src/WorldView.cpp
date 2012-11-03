@@ -709,7 +709,7 @@ void WorldView::RefreshButtonStateAndVisibility()
 			m_hudTargetInfo->Show();
 		}
 
-		else if (b->IsType(Object::HYPERSPACECLOUD) && Pi::player->m_equipment.Get(Equip::SLOT_HYPERCLOUD) == Equip::HYPERCLOUD_ANALYZER) {
+		else if (b->IsType(Object::HYPERSPACECLOUD) && Pi::player->GetModifier("hypercloud_analyzer") > 0) {
 			HyperspaceCloud *cloud = static_cast<HyperspaceCloud*>(b);
 
 			m_hudTargetHullIntegrity->Hide();
