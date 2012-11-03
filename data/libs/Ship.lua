@@ -79,3 +79,32 @@ end
 function Ship:GetEquipSlotCapacity(slot)
     return self.equipSet:SlotSize(slot)
 end
+
+--
+-- Method: GetEquipCount
+--
+-- Get the number of a given equipment or cargo item in a given equipment slot
+--
+-- > count = ship:GetEquipCount(slot, item)
+--
+-- Parameters:
+--
+--   slot - a <Constants.EquipSlot> string for the slot
+--
+--   item - a <Constants.EquipType> string for the item
+--
+-- Return:
+--
+--   count - the number of the given item in the slot
+--
+-- Availability:
+--
+--  alpha 10
+--
+-- Status:
+--
+--  experimental
+--
+function Ship:GetEquipCount(slot, item)
+    return self.equipSet:Count(item, slot)
+end

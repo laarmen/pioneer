@@ -676,40 +676,6 @@ static int l_ship_remove_equip(lua_State *l)
 }
 
 /*
- * Method: GetEquipCount
- *
- * Get the number of a given equipment or cargo item in a given equipment slot
- *
- * > count = ship:GetEquipCount(slot, item)
- *
- * Parameters:
- *
- *   slot - a <Constants.EquipSlot> string for the slot
- *
- *   item - a <Constants.EquipType> string for the item
- *
- * Return:
- *
- *   count - the number of the given item in the slot
- *
- * Availability:
- *
- *  alpha 10
- *
- * Status:
- *
- *  experimental
- */
-static int l_ship_get_equip_count(lua_State *l)
-{
-	Ship *s = LuaShip::GetFromLua(1);
-	Equip::Slot slot = static_cast<Equip::Slot>(LuaConstants::GetConstant(l, "EquipSlot", luaL_checkstring(l, 2)));
-	Equip::Type e = static_cast<Equip::Type>(LuaConstants::GetConstant(l, "EquipType", luaL_checkstring(l, 3)));
-	lua_pushinteger(l, s->m_equipment.Count(slot, e));
-	return 1;
-}
-
-/*
  * Method: GetEquipFree
  *
  * Get the amount of free space in a given equipment slot
@@ -1515,7 +1481,6 @@ template <> void LuaObject<Ship>::RegisterClass()
 		{ "SetEquip",         l_ship_set_equip           },
 		{ "AddEquip",         l_ship_add_equip           },
 		{ "RemoveEquip",      l_ship_remove_equip        },
-		{ "GetEquipCount",    l_ship_get_equip_count     },
 		{ "GetEquipFree",     l_ship_get_equip_free      },
 
 		{ "GetModifier",    l_ship_get_modifier },
