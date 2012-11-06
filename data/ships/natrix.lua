@@ -15,12 +15,15 @@ define_ship {
 	gun_mounts = {
 		{ v(0.000, 0.000, -9.342), v(0.000, 0.000, -1.000), 5, 'HORIZONTAL' },
 	},
-	max_atmoshield = 0,
-	max_cargo = 50,
-	max_laser = 1,
-	max_missile = 0,
-	max_cargoscoop = 0,
-	max_fuelscoop = 0,
+	slots = {
+		atmo_shield = 0,
+		cargo = 50,
+		laser_front = 1,
+		laser_rear = 0,
+		missile = 0,
+		cargo_scoop = 0,
+		fuel_scoop = 0
+	},
 	capacity = 40,
 	hull_mass = 15,
 	fuel_tank_mass = 15,
