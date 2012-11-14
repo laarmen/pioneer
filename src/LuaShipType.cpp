@@ -201,8 +201,7 @@ int l_shiptype_get_linear_thrust(lua_State *l)
 int l_shiptype_get_equip_slot_capacity(lua_State *l)
 {
 	const ShipType *st = LuaShipType::GetFromLua(1);
-	Equip::Slot slot = static_cast<Equip::Slot>(LuaConstants::GetConstant(l, "EquipSlot", luaL_checkstring(l, 2)));
-	lua_pushnumber(l, st->equipSlotCapacity[slot]);
+	lua_pushnumber(l, st->slots.find(luaL_checkstring(l, 2))->second);
 	return 1;
 }
 
