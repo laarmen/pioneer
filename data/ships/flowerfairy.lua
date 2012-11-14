@@ -18,7 +18,7 @@ define_ship {
 		{ v(0,0,0), v(0,0,1), 5, 'HORIZONTAL' },
 	},
 	slots = {
-		atmoshield = 0,
+		atmo_shield = 0,
 		cargo = 500,
 		laser_front = 1,
 		laser_rear = 1,
