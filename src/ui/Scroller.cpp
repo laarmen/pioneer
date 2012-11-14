@@ -22,7 +22,7 @@ Point Scroller::PreferredSize()
 
 	const Point innerWidgetSize = m_innerWidget->PreferredSize();
 
-	return Point(innerWidgetSize.x+sliderSize.x, std::max(innerWidgetSize.y, sliderSize.y));
+	return Point(SizeAdd(innerWidgetSize.x, sliderSize.x), innerWidgetSize.y);
 }
 
 void Scroller::Layout()
@@ -34,7 +34,7 @@ void Scroller::Layout()
 	const Point childPreferredSize = m_innerWidget->PreferredSize();
 
 	// if the child can fit then we don't need the slider
-	if (childPreferredSize.y < size.y) {
+	if (childPreferredSize.y <= size.y) {
 		if (m_slider->GetContainer())
 			RemoveWidget(m_slider);
 
@@ -89,9 +89,16 @@ Scroller *Scroller::SetInnerWidget(Widget *widget)
 void Scroller::RemoveInnerWidget()
 {
 	if (m_innerWidget) {
-		RemoveWidget(m_innerWidget);
+		Container::RemoveWidget(m_innerWidget);
 		m_innerWidget = 0;
 	}
+}
+
+void Scroller::RemoveWidget(Widget *widget)
+{
+	if (m_innerWidget != widget)
+		return;
+	RemoveInnerWidget();
 }
 
 }

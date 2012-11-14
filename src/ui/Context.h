@@ -17,6 +17,8 @@
 #include "Align.h"
 #include "Background.h"
 #include "ColorBackground.h"
+#include "Gradient.h"
+#include "Expand.h"
 #include "Box.h"
 #include "Grid.h"
 #include "Scroller.h"
@@ -28,6 +30,7 @@
 #include "Slider.h"
 #include "List.h"
 #include "DropDown.h"
+#include "TextEntry.h"
 
 #include "Lua.h"
 #include "LuaTable.h"
@@ -74,6 +77,8 @@ public:
 	UI::ColorBackground *ColorBackground(const Color &color) { return new UI::ColorBackground(this, color); }
 	UI::Margin *Margin(float margin) { return new UI::Margin(this, margin); };
 	UI::Align *Align(UI::Align::Direction direction) { return new UI::Align(this, direction); }
+	UI::Gradient *Gradient(const Color &beginColor, const Color &endColor, Gradient::Direction direction = Gradient::VERTICAL) { return new UI::Gradient(this, beginColor, endColor, direction); }
+	UI::Expand *Expand(UI::Expand::Direction direction = Expand::BOTH) { return new UI::Expand(this, direction); }
 	UI::Scroller *Scroller() { return new UI::Scroller(this); }
 
 	// visual elements
@@ -90,6 +95,8 @@ public:
 
 	UI::List *List() { return new UI::List(this); }
 	UI::DropDown *DropDown() { return new UI::DropDown(this); }
+
+	UI::TextEntry *TextEntry(const std::string &text = "") { return new UI::TextEntry(this, text); }
 
 	// add a floating widget
 	Context *AddFloatingWidget(Widget *w, const Point &pos, const Point &size) { m_float->AddWidget(w, pos, size); return this; }
@@ -108,6 +115,9 @@ public:
 
 	void RequestLayout() { m_needsLayout = true; }
 
+	void SelectWidget(Widget *target) { m_eventDispatcher.SelectWidget(target); }
+	void DeselectWidget(Widget *target) { m_eventDispatcher.DeselectWidget(target); }
+
 	virtual void Layout();
 	virtual void Update();
 	virtual void Draw();
@@ -121,8 +131,8 @@ public:
 
 	const float &GetScale() const { return m_scale; }
 
-	RefCountedPtr<Text::TextureFont> GetFont() const { return GetFont(Widget::FONT_SIZE_NORMAL); }
-	RefCountedPtr<Text::TextureFont> GetFont(Widget::FontSize fontSize) const { return m_font[fontSize]; }
+	RefCountedPtr<Text::TextureFont> GetFont() const { return GetFont(Widget::FONT_NORMAL); }
+	RefCountedPtr<Text::TextureFont> GetFont(Widget::Font font) const { return m_font[font]; }
 
 private:
 	virtual Point PreferredSize() { return Point(); }
@@ -144,7 +154,7 @@ private:
 
 	LuaRef m_templateStore;
 
-	RefCountedPtr<Text::TextureFont> m_font[FONT_SIZE_MAX];
+	RefCountedPtr<Text::TextureFont> m_font[FONT_MAX];
 
 	// Container will draw widgets through the Context to correctly accumulate
 	// positions and offsets
@@ -153,7 +163,6 @@ private:
 
 	// support for DrawWidget()
 	Point m_drawWidgetPosition;
-	Point m_drawWidgetOffset;
 	std::stack< std::pair<Point,Point> > m_scissorStack;
 };
 

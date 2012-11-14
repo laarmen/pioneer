@@ -18,6 +18,8 @@ void LuaInit()
 	LuaObject<UI::Container>::RegisterClass();
 	LuaObject<UI::Context>::RegisterClass();
 	LuaObject<UI::DropDown>::RegisterClass();
+	LuaObject<UI::Gradient>::RegisterClass();
+	LuaObject<UI::Expand>::RegisterClass();
 	LuaObject<UI::Grid>::RegisterClass();
 	LuaObject<UI::Image>::RegisterClass();
 	LuaObject<UI::Label>::RegisterClass();
@@ -27,6 +29,7 @@ void LuaInit()
 	LuaObject<UI::Scroller>::RegisterClass();
 	LuaObject<UI::Single>::RegisterClass();
 	LuaObject<UI::Slider>::RegisterClass();
+	LuaObject<UI::TextEntry>::RegisterClass();
 	LuaObject<UI::HSlider>::RegisterClass();
 	LuaObject<UI::VSlider>::RegisterClass();
 	LuaObject<UI::Widget>::RegisterClass();

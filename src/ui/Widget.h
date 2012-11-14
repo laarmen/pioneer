@@ -9,6 +9,7 @@
 #include "Event.h"
 #include "RefCounted.h"
 #include "WidgetSet.h"
+#include <climits>
 
 // Widget is the base class for all UI elements. There's a couple of things it
 // must implement, and a few more it might want to implement if it wants to do
@@ -138,21 +139,36 @@ public:
 	// are we floating
 	bool IsFloating() const { return m_floating; }
 
+	virtual bool IsSelectable() const { return false; }
+
 	// font size. obviously used for text size but also sometimes used for
 	// general widget size (eg space size). might do nothing, depends on the
 	// widget
-	enum FontSize { // <enum scope='UI::Widget' name=UIFontSize prefix=FONT_SIZE_>
-		FONT_SIZE_INHERIT,
-		FONT_SIZE_XSMALL,
-		FONT_SIZE_SMALL,
-		FONT_SIZE_NORMAL,
-		FONT_SIZE_LARGE,
-		FONT_SIZE_XLARGE,
-		FONT_SIZE_MAX       // <enum skip>
+	enum Font { // <enum scope='UI::Widget' name=UIFont prefix=FONT_>
+		FONT_XSMALL,
+		FONT_SMALL,
+		FONT_NORMAL,
+		FONT_LARGE,
+		FONT_XLARGE,
+
+		FONT_HEADING_XSMALL,
+		FONT_HEADING_SMALL,
+		FONT_HEADING_NORMAL,
+		FONT_HEADING_LARGE,
+		FONT_HEADING_XLARGE,
+
+		FONT_MAX,                 // <enum skip>
+
+		FONT_INHERIT,
+
+		FONT_SMALLEST         = FONT_XSMALL,         // <enum skip>
+		FONT_LARGEST          = FONT_XLARGE,         // <enum skip>
+		FONT_HEADING_SMALLEST = FONT_HEADING_XSMALL, // <enum skip>
+		FONT_HEADING_LARGEST  = FONT_HEADING_XLARGE, // <enum skip>
 	};
 
-	virtual Widget *SetFontSize(FontSize fontSize);
-	FontSize GetFontSize() const;
+	virtual Widget *SetFont(Font font);
+	Font GetFont() const;
 
 	// widget id. used for queries/searches
 	const std::string &GetId() const { return m_id; }
@@ -202,6 +218,13 @@ public:
 
 protected:
 
+	// magic constant for PreferredSize to indicate "as much as possible"
+	static const int SIZE_EXPAND = INT_MAX;
+
+	// safely add two sizes, preserving SIZE_EXPAND
+	static inline int SizeAdd(int a, int b) { return a == SIZE_EXPAND || b == SIZE_EXPAND ? SIZE_EXPAND : a+b; }
+	static inline Point SizeAdd(const Point &a, const Point &b) { return Point(SizeAdd(a.x,b.x), SizeAdd(a.y,b.y)); }
+
 	// set the active area. defaults to the size allocated by the container
 	void SetActiveArea(const Point &activeArea, const Point &activeOffset = Point());
 
@@ -210,6 +233,8 @@ protected:
 	bool IsMouseActive() const { return m_mouseActive; }
 
 	bool IsMouseOver() const { return m_mouseOver; }
+
+	bool IsSelected() const { return m_selected; }
 
 	// internal event handlers. override to handle events. unlike the external
 	// on* signals, every widget in the stack is guaranteed to receive a call
@@ -236,6 +261,17 @@ protected:
 	// MouseActivate(). mouse clicks trigger this
 	virtual void HandleMouseActivate() {}
 	virtual void HandleMouseDeactivate() {}
+
+	// synthesized event. like KeyDown except you get multiple events if the
+	// key is held down
+	virtual void HandleKeyPress(const KeyboardEvent &event) {}
+
+	// internal synthesized events fired when a widget is selected or
+	// deselected. on mousedown, a widget becomes the selected widget unless
+	// its IsSelectable method returns false. the previously-selected widget
+	// (if there was one) gets deselected
+	virtual void HandleSelect() {}
+	virtual void HandleDeselect() {}
 
 
 private:
@@ -267,6 +303,11 @@ private:
 	void TriggerMouseActivate();
 	void TriggerMouseDeactivate();
 
+	bool TriggerKeyPress(const KeyboardEvent &event, bool emit = true);
+
+	void TriggerSelect();
+	void TriggerDeselect();
+
 
 	// let container set our attributes. none of them make any sense if
 	// we're not in a container
@@ -297,12 +338,13 @@ private:
 	Point m_activeOffset;
 	Point m_activeArea;
 
-	FontSize m_fontSize;
+	Font m_font;
 
 	bool m_floating;
 
 	bool m_mouseOver;
 	bool m_mouseActive;
+	bool m_selected;
 
 	std::string m_id;
 };

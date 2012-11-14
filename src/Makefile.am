@@ -5,7 +5,7 @@ endif
 if BUILD_POSIX
     PLATFORM_SUBDIRS = posix
 endif
-SUBDIRS = collider gui graphics galaxy terrain text ui $(PLATFORM_SUBDIRS)
+SUBDIRS = collider gui graphics galaxy terrain text ui gameui $(PLATFORM_SUBDIRS)
 
 include $(top_srcdir)/Makefile.common
 
@@ -42,7 +42,6 @@ noinst_HEADERS = \
 	FileSelectorWidget.h \
 	FileSystem.h \
 	FontCache.h \
-	FontConfig.h \
 	Form.h \
 	FormController.h \
 	Frame.h \
@@ -112,6 +111,7 @@ noinst_HEADERS = \
 	Pi.h \
 	Planet.h \
 	Player.h \
+	PngWriter.h \
 	Polit.h \
 	Projectile.h \
 	Quaternion.h \
@@ -151,6 +151,7 @@ noinst_HEADERS = \
 	SystemView.h \
 	TerrainBody.h \
 	Tombstone.h \
+	UIView.h \
 	VideoLink.h \
 	View.h \
 	WorldView.h \
@@ -189,7 +190,6 @@ pioneer_SOURCES	= \
 	FileSourceZip.cpp \
 	FileSystem.cpp \
 	FontCache.cpp \
-	FontConfig.cpp \
 	FormController.cpp \
 	Frame.cpp \
 	GalacticView.cpp \
@@ -252,6 +252,7 @@ pioneer_SOURCES	= \
 	Pi.cpp \
 	Planet.cpp \
 	Player.cpp \
+	PngWriter.cpp \
 	Polit.cpp \
 	Projectile.cpp \
 	SDLWrappers.cpp \
@@ -288,6 +289,7 @@ pioneer_SOURCES	= \
 	SystemView.cpp \
 	TerrainBody.cpp \
 	Tombstone.cpp \
+	UIView.cpp \
 	View.cpp \
 	WorldView.cpp \
 	WorldViewCamera.cpp \
@@ -306,7 +308,8 @@ pioneer_LDADD = \
 	graphics/libgraphics.a \
 	galaxy/libgalaxy.a \
 	terrain/libterrain.a \
-	ui/libui.a
+	ui/libui.a \
+	gameui/libgameui.a
 
 pioneer_LDADD += \
 	$(FREETYPE_LIBS) $(GLEW_LIBS) $(GLU_LIBS) $(GL_LIBS) \
@@ -327,7 +330,6 @@ modelviewer_SOURCES = \
 	FileSourceZip.cpp \
 	FileSystem.cpp \
 	FontCache.cpp \
-	FontConfig.cpp \
 	IniConfig.cpp \
 	Lang.cpp \
 	LuaMatrix.cpp \
@@ -339,6 +341,7 @@ modelviewer_SOURCES = \
 	LuaUtils.cpp \
 	LuaConstants.cpp \
 	ModManager.cpp \
+	PngWriter.cpp \
 	EquipType.cpp \
 	ShipType.cpp \
 	SDLWrappers.cpp \
@@ -389,7 +392,6 @@ uitest_SOURCES = \
 	FileSystem.cpp \
 	SDLWrappers.cpp \
 	FontCache.cpp \
-	FontConfig.cpp \
 	IniConfig.cpp \
 	StringF.cpp \
 	Lang.cpp \
@@ -399,6 +401,7 @@ uitest_SOURCES = \
 	LuaObject.cpp \
 	LuaConstants.cpp \
 	LuaRef.cpp \
+	PngWriter.cpp \
 	enum_table.cpp \
 	utils.cpp
 uitest_LDADD = \

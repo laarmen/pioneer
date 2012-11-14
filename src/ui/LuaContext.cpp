@@ -30,7 +30,7 @@ public:
 	static int l_grid(lua_State *l) {
 		UI::Context *c = LuaObject<UI::Context>::CheckFromLua(1);
 
-		UI::CellSpec rowSpec(0), colSpec(0);
+		UI::CellSpec rowSpec(1), colSpec(1);
 
 		if (lua_istable(l, 2))
 			rowSpec = UI::CellSpec::FromLuaTable(l, 2);
@@ -61,6 +61,24 @@ public:
 		if (lua_gettop(l) > 4)
 			a = luaL_checknumber(l, 5);
 		LuaObject<UI::ColorBackground>::PushToLua(c->ColorBackground(Color(r,g,b,a)));
+		return 1;
+	}
+
+	static int l_gradient(lua_State *l) {
+		UI::Context *c = LuaObject<UI::Context>::CheckFromLua(1);
+		Color beginColor = Color::FromLuaTable(l, 2);
+		Color endColor = Color::FromLuaTable(l, 3);
+		UI::Gradient::Direction direction = static_cast<UI::Gradient::Direction>(LuaConstants::GetConstantFromArg(l, "UIGradientDirection", 4));
+		LuaObject<UI::Gradient>::PushToLua(c->Gradient(beginColor, endColor, direction));
+		return 1;
+	}
+
+	static int l_expand(lua_State *l) {
+		UI::Context *c = LuaObject<UI::Context>::CheckFromLua(1);
+		UI::Expand::Direction direction = UI::Expand::BOTH;
+		if (lua_gettop(l) > 1)
+			direction = static_cast<UI::Expand::Direction>(LuaConstants::GetConstantFromArg(l, "UIExpandDirection", 2));
+		LuaObject<UI::Expand>::PushToLua(c->Expand(direction));
 		return 1;
 	}
 
@@ -141,6 +159,15 @@ public:
 		return 1;
 	}
 
+	static int l_textentry(lua_State *l) {
+		UI::Context *c = LuaObject<UI::Context>::CheckFromLua(1);
+		std::string text;
+		if (lua_gettop(l) > 1)
+			text = luaL_checkstring(l, 2);
+		LuaObject<UI::TextEntry>::PushToLua(c->TextEntry(text));
+		return 1;
+	}
+
 	static int l_attr_templates(lua_State *l) {
 		UI::Context *c = LuaObject<UI::Context>::CheckFromLua(1);
 		c->GetTemplateStore().PushCopyToStack();
@@ -164,6 +191,8 @@ template <> void LuaObject<UI::Context>::RegisterClass()
 		{ "Grid",            LuaContext::l_grid            },
 		{ "Background",      LuaContext::l_background      },
 		{ "ColorBackground", LuaContext::l_colorbackground },
+		{ "Gradient",        LuaContext::l_gradient        },
+		{ "Expand",          LuaContext::l_expand          },
 		{ "Margin",          LuaContext::l_margin          },
 		{ "Align",           LuaContext::l_align           },
 		{ "Scroller",        LuaContext::l_scroller        },
@@ -176,6 +205,7 @@ template <> void LuaObject<UI::Context>::RegisterClass()
 		{ "VSlider",         LuaContext::l_vslider         },
 		{ "List",            LuaContext::l_list            },
 		{ "DropDown",        LuaContext::l_dropdown        },
+		{ "TextEntry",       LuaContext::l_textentry       },
 		{ 0, 0 }
 	};
 

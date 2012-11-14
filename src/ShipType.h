@@ -37,10 +37,11 @@ struct ShipType {
 		TAG_MISSILE,
 		TAG_MAX // <enum skip>
 	};
-	typedef std::string Type;
+	typedef std::string Id;
 
 	////////
 	Tag tag;
+	Id id;
 	std::string name;
 	std::string lmrModelName;
 	float linThrust[THRUSTER_MAX];
@@ -71,17 +72,17 @@ struct ShipType {
 	static std::string MISSILE_SMART;
 	static std::string MISSILE_UNGUIDED;
 
-	static std::map<Type, ShipType> types;
-	static std::vector<Type> player_ships;
-	static std::vector<Type> static_ships;
-	static std::vector<Type> missile_ships;
+	static std::map<Id, ShipType> types;
+	static std::vector<Id> player_ships;
+	static std::vector<Id> static_ships;
+	static std::vector<Id> missile_ships;
 
-	static std::vector<Type> playable_atmospheric_ships;
+	static std::vector<Id> playable_atmospheric_ships;
 
 	static const char *gunmountNames[GUNMOUNT_MAX];
 	static void Init();
 	static const ShipType *Get(const char *name) {
-		std::map<Type, ShipType>::iterator t = types.find(name);
+		std::map<Id, ShipType>::iterator t = types.find(name);
 		if (t == types.end()) return 0;
 		else return &(*t).second;
 	}
