@@ -159,6 +159,138 @@ function Ship:GetEquipCount(slot, item)
 	end
     return self.equipSet:Count(item, slot)
 end
+
+--
+-- Method: AddEquip
+--
+-- Add an equipment or cargo item to its appropriate equipment slot
+--
+-- > num_added = ship:AddEquip(item, count)
+--
+-- Parameters:
+--
+--   item - a <Constants.EquipType> string for the item
+--
+--   count - optional. The number of this item to add. Defaults to 1.
+--
+-- Return:
+--
+--   num_added - the number of items added. Can be less than count if there
+--               was not enough room.
+--
+-- Example:
+--
+-- > ship:AddEquip("ANIMAL_MEAT", 10)
+--
+-- Availability:
+--
+--   alpha 10
+--
+-- Status:
+--
+--   experimental
+--
+function Ship:AddEquip(item, count)
+	if type(item) == "string" then
+		debug.deprecated()
+		item = compat.equip.old2new[item]
+	end
+	return self.equipSet:Add(self, item, count)
+end
+--
+-- Method: GetEquip
+--
+-- Get a list of equipment in a given equipment slot
+--
+-- > equip = ship:GetEquip(slot, index)
+-- > equiplist = ship:GetEquip(slot)
+--
+-- Parameters:
+--
+--   slot - a <Constants.EquipSlot> string for the wanted equipment type
+--
+--   index - optional. The equipment position in the slot to fetch. If
+--           specified the item at that position in the slot will be returned,
+--           otherwise a table containing all items in the slot will be
+--           returned instead.
+--
+-- Return:
+--
+--   equip - when index is specified, a <Constants.EquipType> string for the
+--           item
+--
+--   equiplist - when index is not specified, a table of zero or more
+--               <Constants.EquipType> strings for all the items in the slot
+--
+-- Availability:
+--
+--  alpha 10
+--
+-- Status:
+--
+--  experimental
+--
+Ship.GetEquip = function (self, slot, index)
+	local c = compat.slots.old2new[slot]
+	if c then
+        debug.deprecated()
+		slot = c
+	end
+	local ret = self.equipSet:Get(slot, index)
+	if c then
+		if type(index) == "number" then
+			if ret then
+				ret = compat.equip.new2old[ret]
+			else
+				ret = "NONE"
+			end
+		else
+			local tmp = {}
+			for i=1,self.equipSet:SlotSize(slot),1 do
+				if ret[i] then
+					tmp[i] = compat.equip.new2old[ret[i]]
+				else
+					tmp[i] = "NONE"
+				end
+			end
+			ret = tmp
+		end
+	end
+	return ret
+end
+
+--
+-- Method: GetEquipFree
+--
+-- Get the amount of free space in a given equipment slot
+--
+-- > free = ship:GetEquipFree(slot)
+--
+-- Parameters:
+--
+--   slot - a <Constants.EquipSlot> string for the slot to check
+--
+-- Return:
+--
+--   free - the number of item spaces left in this slot
+--
+-- Availability:
+--
+--  alpha 10
+--
+-- Status:
+--
+--  experimental
+--
+Ship.GetEquipFree = function (self, slot)
+	local c = compat.slots.old2new[slot]
+	if c then
+        debug.deprecated()
+		return self.equipSet:FreeSpace(c)
+	end
+    return self.equipSet:FreeSpace(slot)
+end
+
 compat.slots = {}
 compat.equip = {}
 compat.slots.old2new={
@@ -170,6 +302,79 @@ compat.slots.old2new={
 	LASERCOOLER="laser_cooler", CARGOLIFESUPPORT="cargo_life_support",
 	AUTOPILOT="autopilot"
 }
+--
+-- Method: SetEquip
+--
+-- Overwrite a single item of equipment in a given equipment slot
+--
+-- > ship:SetEquip(slot, index, equip)
+--
+-- Parameters:
+--
+--   slot - a <Constants.EquipSlot> string for the equipment slot
+--
+--   index - the position to store the item in
+--
+--   item - a <Constants.EquipType> string for the item
+--
+-- Example:
+--
+-- > -- add a laser to the rear laser mount
+-- > ship:SetEquip("LASER", 1, "PULSECANNON_1MW")
+--
+-- Availability:
+--
+--  alpha 10
+--
+-- Status:
+--
+--  experimental
+--
+Ship.SetEquip = function (self, slot, index, equip)
+	if type(item) == "string" then
+		debug.deprecated()
+		item = compat.equip.old2new[item]
+	end
+	return self.equipSet:Set(self, slot, index, item)
+end
+--
+-- Method: RemoveEquip
+--
+-- Remove one or more of a given equipment type from its appropriate cargo slot
+--
+-- > num_removed = ship:RemoveEquip(item, count)
+--
+-- Parameters:
+--
+--   item - a <Constants.EquipType> string for the item
+--
+--   count - optional. The number of this item to remove. Defaults to 1.
+--
+-- Return:
+--
+--   num_removed - the number of items removed
+--
+-- Example:
+--
+-- > ship:RemoveEquip("DRIVE_CLASS1")
+--
+-- Availability:
+--
+--  alpha 10
+--
+-- Status:
+--
+--  experimental
+--
+
+Ship.RemoveEquip = function (self, item, count)
+	if type(item) == "string" then
+		debug.deprecated()
+		item = compat.equip.old2new[item]
+	end
+	return self.equipSet:Remove(self, item, count)
+end
+
 compat.slots.new2old = {}
 for k,v in pairs(compat.slots.old2new) do
 	compat.slots.new2old[v] = k
