@@ -116,7 +116,7 @@ end
 function Ship:GetEquipSlotCapacity(slot)
 	local c = compat.slots.old2new[slot]
 	if c then
-		print("WARNING: GetEquipSlotCapacity slot specification is deprecated!")
+        debug.deprecated()
 		return self.equipSet:SlotSize(c)
 	end
     return self.equipSet:SlotSize(slot)
@@ -150,11 +150,11 @@ end
 function Ship:GetEquipCount(slot, item)
 	local c = compat.slots.old2new[slot]
 	if c then
-		print("WARNING: GetEquipCount slot specification is deprecated!")
+        debug.deprecated()
 		slot = c
 	end
 	if type(item) == "string" then
-		print("WARNING: GetEquipCount item specification is deprecated!")
+        debug.deprecated()
 		item = compat.equip.old2new[item]
 	end
     return self.equipSet:Count(item, slot)
