@@ -283,7 +283,7 @@ end
 
 local filterAcceptableShips = function (ship_type)
 	-- only accept ships with enough capacity that are capable of landing in atmospheres
-	return (ship_type.hullMass >= 100) and (ship_type:GetEquipSlotCapacity('ATMOSHIELD') > 0)
+	return (ship_type.hullMass >= 100) and (ship_type:GetEquipSlotCapacity('atmo_shield') > 0)
 end
 
 local spawnInitialShips = function (game_start)
