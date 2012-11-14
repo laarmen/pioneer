@@ -16,10 +16,12 @@ define_ship {
 	{
 		{ v(0,0,-25), v(0,0,-1), 5, 'HORIZONTAL' },
 	},
-	max_cargo = 5,
-	max_missile = 4,
-	max_cargoscoop = 0,
-	max_ecm = 0,
+	slots = {
+		cargo = 5,
+		missile = 4,
+		cargo_scoop = 0,
+		ecm = 0
+	},
 	hyperdrive_class = 1,
 	capacity = 12,
 	hull_mass = 5,

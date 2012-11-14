@@ -17,10 +17,13 @@ define_ship {
 		{ v(0,-4,-10.2), v(0,0,-1), 5, 'HORIZONTAL' },
 		{ v(0,-0.5,0), v(0,0,1), 5, 'HORIZONTAL' },
 	},
-	max_cargo = 90,
-	max_laser = 2,
-	max_missile = 4,
-	max_cargoscoop = 0,
+	slots = {
+		cargo = 90,
+		laser_front = 1,
+		laser_rear = 1,
+		missile = 4,
+		cargo_scoop = 0
+	},
 	capacity = 90,
 	hull_mass = 50,
 	fuel_tank_mass = 5,
