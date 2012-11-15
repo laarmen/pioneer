@@ -3,7 +3,7 @@
 --
 -- A container for a ship's equipment.
 EquipSet = {}
-equipSet_meta = { __index = EquipSet }
+equipSet_meta = { __index = EquipSet, class='EquipSet' }
 
 defaultSlots = {
 	cargo=0,
@@ -275,3 +275,12 @@ function EquipSet:Set(ship, slot, index, item)
 		end
 	end
 end
+
+EquipSet.Serialize = function (self)
+	return self
+end,
+
+EquipSet.Unserialize = function (data)
+	setmetatable(data, equipSet_meta)
+	return data
+end,

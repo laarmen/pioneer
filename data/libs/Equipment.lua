@@ -1,5 +1,5 @@
 EquipType = {}
-equipType_meta = { __index = EquipType }
+equipType_meta = { __index = EquipType, class='EquipType' }
 
 function EquipType.new (specs)
 	local obj = {}
@@ -57,6 +57,16 @@ end
 function EquipType:Uninstall(ship, num, slot)
 	return __ApplyModifiers(ship, self.modifiers, num, -1)
 end
+
+
+EquipType.Serialize = function (self)
+	return self
+end,
+
+EquipType.Unserialize = function (data)
+	setmetatable(data, equipType_meta)
+	return data
+end,
 
 cargo = {}
 cargo.hydrogen = EquipType.new({
