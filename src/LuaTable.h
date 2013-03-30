@@ -31,11 +31,14 @@ public:
 	const LuaTable & operator=(const LuaTable & ref) { m_lua = ref.m_lua; m_index = ref.m_index; return *this;}
 	template <class Key> void PushValueToStack(const Key & key) const;
 	template <class Value, class Key> Value Get(const Key & key) const;
+	template <class Key> LuaTable Sub(const Key & key) const; // Does not clean up the stack.
+	template <class Value, class Key> Value Get(const Key & key, Value default_value) const;
 	template <class Value, class Key> void Set(const Key & key, const Value & value) const;
 
 	template <class Key, class Value> std::map<Key, Value> GetMap() const;
 	template <class Key, class Value> void LoadMap(const std::map<Key, Value> & m) const;
 	template <class Value> std::vector<Value> GetVector() const;
+	std::vector<LuaTable> SubVector() const;
 	template <class Value> void LoadVector(const std::vector<Value> & m) const;
 
 	lua_State * GetLua() const { return m_lua; }
@@ -55,12 +58,25 @@ template <class Key> void LuaTable::PushValueToStack(const Key & key) const {
 	lua_gettable(m_lua, m_index);
 }
 
+template <class Key> LuaTable LuaTable::Sub(const Key & key) const {
+	PushValueToStack(key);
+	return (lua_istable(m_lua, -1)) ? LuaTable(m_lua, -1) : LuaTable();
+}
+
 template <class Value, class Key> Value LuaTable::Get(const Key & key) const {
 	Value return_value;
 	PushValueToStack(key);
 	pi_lua_generic_pull(m_lua, -1, return_value);
 	lua_pop(m_lua, 1);
 	return return_value;
+}
+
+template <class Value, class Key> Value LuaTable::Get(const Key & key, Value default_value) const {
+	PushValueToStack(key);
+	if (!(lua_isnil(m_lua, -1)))
+		pi_lua_generic_pull(m_lua, -1, default_value);
+	lua_pop(m_lua, 1);
+	return default_value;
 }
 
 template <class Value, class Key> void LuaTable::Set(const Key & key, const Value & value) const {
