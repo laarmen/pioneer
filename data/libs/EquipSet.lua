@@ -308,8 +308,12 @@ function EquipSet:Get(slot, index)
 		return self.slots[slot][index]
 	end
 	ret = {}
-	for i,v in ipairs(self.slots[slot]) do
-		table.insert(ret, i, v)
+	local s = self.slots[slot]
+	for i = 1,s.__limit do
+		local v = s[i]
+		if v ~= nil then
+			ret[#ret+1] = v
+		end
 	end
 	return ret
 end
